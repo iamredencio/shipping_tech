@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  api:
+    build: .
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./data:/app/data
+    environment:
+      - ENVIRONMENT=development
+      - DATA_PATH=/app/data
+      - MODEL_PATH=/app/models
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/system/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # notebooks:
+  #   build: 
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   command: jupyter lab --ip=0.0.0.0 --port=8888 --no-browser --allow-root
+  #   ports:
+  #     - "8888:8888"
+  #   volumes:
+  #     - ./data:/app/data
+  #     - ./notebooks:/app/notebooks
+  #   environment:
+  #     - JUPYTER_TOKEN=maritime
+  #   depends_on:
+  #     - api
+
+networks:
+  default:
+    name: maritime-network

@@ -1,0 +1,129 @@
+openapi: 3.0.0
+info:
+  title: AIS Vessel Tracking API
+  version: 1.0.0
+  description: API for vessel tracking using AI/ML algorithms
+servers:
+  - url: http://localhost:8001
+paths:
+  /:
+    get:
+      summary: Root endpoint
+      responses:
+        '200':
+          description: API status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  status:
+                    type: string
+                  models_loaded:
+                    type: boolean
+  /vessels:
+    get:
+      summary: Get list of all vessels
+      responses:
+        '200':
+          description: List of vessels
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  vessels:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        mmsi:
+                          type: string
+                        name:
+                          type: string
+                        type:
+                          type: integer
+                        last_position:
+                          type: object
+                          properties:
+                            lat:
+                              type: number
+                            lon:
+                              type: number
+                            timestamp:
+                              type: string
+  /vessel/{mmsi}:
+    get:
+      summary: Get vessel data
+      parameters:
+        - name: mmsi
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Vessel data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mmsi:
+                    type: string
+                  vessel_info:
+                    type: object
+                  tracking_results:
+                    type: object
+  /vessel/{mmsi}/predict:
+    get:
+      summary: Get AI predictions for vessel
+      parameters:
+        - name: mmsi
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: AI predictions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  vessel_id:
+                    type: string
+                  lstm_prediction:
+                    type: object
+                  rl_recommendation:
+                    type: object
+                  current_state:
+                    type: object
+  /system/status:
+    get:
+      summary: Get system status
+      responses:
+        '200':
+          description: System status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  data_loaded:
+                    type: boolean
+                  models_initialized:
+                    type: boolean
+                  gpu_available:
+                    type: boolean
+                  total_vessels:
+                    type: integer
+                  total_records:
+                    type: integer
+                  version:
+                    type: string

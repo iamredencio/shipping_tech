@@ -142,3 +142,41 @@ Follow these steps if you prefer to set up manually or if you are on an operatin
     *   Open your browser and navigate to `http://localhost:3000` (or the port specified in the console).
 
     *   **Note:** The dashboard currently uses **simulated data**. To display real results, connect the frontend to a backend API providing actual data and predictions.
+
+## Running with Docker (Recommended for Deployment)
+
+This project includes Docker configuration to build and run the frontend and backend services in containers using Docker Compose.
+
+**Prerequisites:**
+
+*   Docker: [Install Docker](https://docs.docker.com/get-docker/)
+*   Docker Compose: Usually included with Docker Desktop, or [install separately](https://docs.docker.com/compose/install/).
+
+**Steps:**
+
+1.  **Build and Run Containers:**
+    *   Open your terminal in the project's root directory.
+    *   Run the following command:
+        ```bash
+        docker-compose up --build
+        ```
+        *   `--build`: Forces Docker to build the images before starting the containers. You can omit `--build` on subsequent runs if the code hasn't changed significantly.
+        *   `-d`: (Optional) Add `-d` to run the containers in detached mode (in the background). `docker-compose up --build -d`
+
+2.  **Access the Application:**
+    *   **Frontend:** Open your browser and navigate to `http://localhost:3000`.
+    *   **Backend API (if running):** The API should be accessible at `http://localhost:8000` (or potentially via the frontend depending on your setup).
+
+3.  **Stopping Containers:**
+    *   If running in the foreground (without `-d`), press `Ctrl + C` in the terminal where `docker-compose up` is running.
+    *   If running in detached mode (with `-d`), run:
+        ```bash
+        docker-compose down
+        ```
+        This command stops and removes the containers and network defined in the `docker-compose.yml` file. Add `-v` (`docker-compose down -v`) if you also want to remove named volumes (not used in the current basic setup).
+
+**Important Notes:**
+
+*   The `CMD` in `Dockerfile.backend` needs to be correctly set to run your Python API server (e.g., Uvicorn for FastAPI). The provided file has a placeholder/example.
+*   Ensure any necessary environment variables are defined in the `docker-compose.yml` file for both services.
+*   Large data files are ignored by git and won't be included in the Docker image unless mounted via volumes or added through a separate data handling strategy.

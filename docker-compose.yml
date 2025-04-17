@@ -1,0 +1,47 @@
+version: '3.8' # Specify docker-compose version
+
+services:
+  # Frontend Service (Next.js)
+  frontend:
+    build:
+      context: . # Use the current directory as context
+      dockerfile: Dockerfile.frontend # Specify the frontend Dockerfile
+    container_name: maritime-frontend
+    ports:
+      - "3000:3000" # Map host port 3000 to container port 3000
+    environment:
+      # Define environment variables needed by Next.js at runtime
+      # Example: Point frontend to the backend API
+      - NEXT_PUBLIC_API_URL=http://backend:8000 # Use service name 'backend'
+      # Add other necessary frontend environment variables here
+      # - NODE_ENV=production # Often set automatically by npm start
+    depends_on:
+      - backend # Optional: Ensures backend starts before frontend attempts connection
+    networks:
+      - maritime-net
+
+  # Backend Service (Python API)
+  backend:
+    build:
+      context: . # Use the current directory as context
+      dockerfile: Dockerfile.backend # Specify the backend Dockerfile
+    container_name: maritime-backend
+    ports:
+      - "8000:8000" # Map host port 8000 to container port 8000
+    volumes:
+      # Optional: Mount volumes for persistent data or easier development
+      # - ./maritime-tracking/data:/app/maritime-tracking/data # Mount local data dir
+      # - ./maritime-tracking/models:/app/maritime-tracking/models # Mount local models dir
+      # Be cautious with mounting code in production containers
+      pass
+    environment:
+      # Define environment variables needed by the Python backend
+      # Example: Database connection string, API keys, etc.
+      # - DATABASE_URL=postgresql://user:password@db:5432/mydatabase
+      pass
+    networks:
+      - maritime-net
+
+networks:
+  maritime-net:
+    driver: bridge # Default network driver 

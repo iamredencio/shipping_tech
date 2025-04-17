@@ -1,0 +1,42 @@
+# Dockerfile.backend
+
+# 1. Base Image: Use an official Python image.
+# Use a specific version for stability (e.g., python:3.10-slim)
+FROM python:3.10-slim AS base
+
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+# Set working directory inside the container
+WORKDIR /app/maritime-tracking
+
+# 2. Install System Dependencies (if any)
+# e.g., RUN apt-get update && apt-get install -y --no-install-recommends some-package && rm -rf /var/lib/apt/lists/*
+
+# 3. Install Python Dependencies
+# Copy only the requirements file first to leverage Docker cache
+COPY maritime-tracking/requirements.txt .
+
+# Upgrade pip and install requirements
+RUN pip install --upgrade pip
+RUN pip install --no-cache-dir -r requirements.txt
+
+# 4. Copy Application Code
+# Copy the entire maritime-tracking directory into the container's working directory
+COPY ./maritime-tracking/ .
+
+# 5. Expose Port
+# Expose the port the backend API server will run on (e.g., 8000 for FastAPI/Uvicorn)
+EXPOSE 8000
+
+# 6. Run Command
+# Command to run the application (e.g., start a FastAPI server)
+# IMPORTANT: You need to adapt this command based on your actual backend entry point.
+# If you have maritime-tracking/app/main.py with a FastAPI app instance named 'app':
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+
+# If you don't have an API server yet, you can use a placeholder or run a specific script:
+# CMD ["python", "app/ml/predictor.py"] # Example: Run a script directly (might exit)
+# Placeholder if no API exists yet:
+# CMD ["tail", "-f", "/dev/null"] # Keeps the container running 

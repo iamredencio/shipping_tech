@@ -19,101 +19,110 @@ import { Activity, AlertTriangle, Navigation, Search, Home, Shield, Globe, Cpu, 
 
 // Main dashboard component for maritime vessel tracking and AI control system
 export default function Dashboard() {
-  // State for real-time sensor data from vessel
+  // State for real-time sensor data from vessel (simulated)
   const [sensorData, setSensorData] = useState({
-    gps: { lat: 0, lon: 0 },
-    wind: { speed: 0, direction: 0 },
-    current: { speed: 0, direction: 0 },
-    gyroscope: { pitch: 0, roll: 0, yaw: 0 },
-    engineMetrics: { rpm: 0, temperature: 0, fuelConsumption: 0 },
-    rudderPosition: 0
+    gps: { lat: 0, lon: 0 }, // GPS coordinates
+    wind: { speed: 0, direction: 0 }, // Wind speed and direction
+    current: { speed: 0, direction: 0 }, // Water current speed and direction
+    gyroscope: { pitch: 0, roll: 0, yaw: 0 }, // Vessel orientation
+    engineMetrics: { rpm: 0, temperature: 0, fuelConsumption: 0 }, // Engine performance
+    rudderPosition: 0 // Current rudder angle
   })
 
-  // State for ML model feature vectors
+  // State for ML model feature vectors (simulated)
   const [features, setFeatures] = useState({
-    position: [], // Position-related features
-    motion: [], // Motion and dynamics features  
-    environmental: [], // Environmental condition features
-    historical: [] // Historical trajectory features
+    position: [], // Position-related features (e.g., scaled lat/lon, distance from port)
+    motion: [], // Motion and dynamics features (e.g., speed, acceleration, turn rate)
+    environmental: [], // Environmental condition features (e.g., wind, current impact)
+    historical: [] // Historical trajectory features (e.g., past positions, common routes)
   })
 
-  // State for AI model performance metrics
+  // State for AI model performance metrics (simulated)
   const [modelPerformance, setModelPerformance] = useState({
     accuracy: 0, // Overall prediction accuracy
-    confidence: 0 // Model confidence score
+    confidence: 0 // Model confidence score for current prediction
   })
 
-  // State for AI steering recommendations
-  const [steeringRecommendation, setSteeringRecommendation] = useState(0)
+  // State for AI steering recommendations (simulated)
+  const [steeringRecommendation, setSteeringRecommendation] = useState(0) // Recommended rudder angle
 
-  // Historical performance data for different ML models
+  // State for historical performance data of different ML models (simulated)
   const [data, setData] = useState([
-    // Each entry contains timestamp and accuracy scores for different models
+    // Each entry contains timestamp and accuracy/performance scores for different models
     { timestamp: 1678886400000, logistic: 0.8, kalman: 0.7, rl: 0.6, lstm: 0.9 },
-    // ... additional historical data
+    // ... additional historical data points would be added here
   ]);
 
-  // State for detected anomalies
-  const [anomalies, setAnomalies] = useState([]);
+  // State for detected anomalies in vessel operations (simulated)
+  const [anomalies, setAnomalies] = useState([]); // Stores recent anomaly events
 
+  // Effect hook to initialize and update the performance chart data periodically
   useEffect(() => {
-    // Initial data
-    const initialData = Array.from({ length: 20 }, (_, i) => generateDataPoint(Date.now() + i * 1000));
+    // Generate initial set of data points for the chart
+    const initialData = Array.from({ length: 20 }, (_, i) => generateDataPoint(Date.now() - (20 - i) * 1000)); // Start with past data
     setData(initialData);
 
-    // Update every second
+    // Set up an interval to add new data points and remove old ones
     const interval = setInterval(() => {
-      const newPoint = generateDataPoint(Date.now());
-      setData(prevData => [...prevData.slice(1), newPoint]);
-      detectAnomalies(newPoint);
-    }, 1000);
+      const newPoint = generateDataPoint(Date.now()); // Generate a new data point for the current time
+      setData(prevData => [...prevData.slice(1), newPoint]); // Add new point, remove oldest
+      detectAnomalies(newPoint); // Check the new data point for potential anomalies
+    }, 1000); // Update every second
 
+    // Cleanup function to clear the interval when the component unmounts
     return () => clearInterval(interval);
-  }, []);
+  }, []); // Empty dependency array ensures this runs only once on mount
 
-  // Generate simulated data point with realistic vessel metrics
+  // Generates a simulated data point with realistic vessel metrics and model performance
   const generateDataPoint = (timestamp) => ({
-    // Model predictions with sinusoidal variation
-    logistic: Math.sin(timestamp / 10000) * 10 + 70 + Math.random() * 2,
-    kalman: Math.sin(timestamp / 10000) * 10 + 75 + Math.random(),
-    rl: Math.sin(timestamp / 10000) * 10 + 80 + Math.random() * 1.5,
-    lstm: Math.sin(timestamp / 10000) * 10 + 85 + Math.random() * 0.8,
-    
-    // Simulated vessel metrics
-    speed: 15 + Math.sin(timestamp / 8000) * 3,
-    heading: 180 + Math.sin(timestamp / 15000) * 10,
-    
-    // Engine telemetry
-    engineLoad: 75 + Math.sin(timestamp / 12000) * 5,
-    temperature: 85 + Math.sin(timestamp / 9000) * 3,
-    
-    // Environmental conditions
-    windSpeed: 12 + Math.sin(timestamp / 20000) * 4,
-    waveHeight: 2 + Math.sin(timestamp / 18000)
+    timestamp: timestamp, // Timestamp for the data point
+    // Simulated model performance scores with sinusoidal variation + noise
+    logistic: Math.sin(timestamp / 10000) * 10 + 70 + Math.random() * 2, // Example: Logistic Regression performance
+    kalman: Math.sin(timestamp / 10000) * 10 + 75 + Math.random(),     // Example: Kalman Filter performance
+    rl: Math.sin(timestamp / 10000) * 10 + 80 + Math.random() * 1.5,   // Example: Reinforcement Learning performance
+    lstm: Math.sin(timestamp / 10000) * 10 + 85 + Math.random() * 0.8,    // Example: LSTM performance
+
+    // Simulated vessel metrics with sinusoidal variation
+    speed: 15 + Math.sin(timestamp / 8000) * 3, // Vessel speed in knots
+    heading: 180 + Math.sin(timestamp / 15000) * 10, // Vessel heading in degrees
+
+    // Simulated engine telemetry
+    engineLoad: 75 + Math.sin(timestamp / 12000) * 5, // Engine load percentage
+    temperature: 85 + Math.sin(timestamp / 9000) * 3, // Engine temperature in Celsius
+
+    // Simulated environmental conditions
+    windSpeed: 12 + Math.sin(timestamp / 20000) * 4, // Wind speed in knots
+    waveHeight: 2 + Math.sin(timestamp / 18000) // Wave height in meters
   });
 
-  // Detect anomalies in engine metrics
+  // Detects anomalies based on simple thresholds for engine metrics
   const detectAnomalies = (point) => {
+    // Check if engine load or temperature exceeds predefined thresholds
     if (point.engineLoad > 85 || point.temperature > 90) {
+      // Add the anomaly to the list, keeping only the last 10 anomalies
       setAnomalies(prev => [...prev.slice(-10), {
-        timestamp: point.timestamp,
-        value: Math.max(point.engineLoad, point.temperature),
-        type: point.engineLoad > 85 ? 'High Load' : 'High Temp'
+        timestamp: point.timestamp, // Timestamp of the anomaly
+        value: Math.max(point.engineLoad, point.temperature), // Value that triggered the anomaly
+        type: point.engineLoad > 85 ? 'High Load' : 'High Temp' // Type of anomaly
       }]);
     }
   };
 
+  // Effect hook to update simulated sensor data, features, performance, and steering periodically
   useEffect(() => {
+    // Set up an interval to update various dashboard states
     const interval = setInterval(() => {
-      updateSensorData()
-      updateFeatures()
-      updateModelPerformance()
-      updateSteeringRecommendation()
-    }, 1000)
+      updateSensorData(); // Update simulated sensor readings
+      updateFeatures(); // Update simulated feature vectors
+      updateModelPerformance(); // Update simulated model performance metrics
+      updateSteeringRecommendation(); // Update simulated steering recommendation
+    }, 1000); // Update every second
 
-    return () => clearInterval(interval)
-  }, [])
+    // Cleanup function to clear the interval when the component unmounts
+    return () => clearInterval(interval);
+  }, []); // Empty dependency array ensures this runs only once on mount
 
+  // Updates the sensor data state with new random values (simulation)
   const updateSensorData = () => {
     setSensorData({
       gps: { lat: Math.random() * 180 - 90, lon: Math.random() * 360 - 180 },
@@ -121,30 +130,34 @@ export default function Dashboard() {
       current: { speed: Math.random() * 10, direction: Math.random() * 360 },
       gyroscope: { pitch: Math.random() * 10 - 5, roll: Math.random() * 10 - 5, yaw: Math.random() * 360 },
       engineMetrics: { rpm: Math.random() * 3000, temperature: Math.random() * 100 + 50, fuelConsumption: Math.random() * 50 },
-      rudderPosition: Math.random() * 70 - 35
-    })
+      rudderPosition: Math.random() * 70 - 35 // Angle from -35 to +35 degrees
+    });
   }
 
+  // Updates the feature vector state with new random values (simulation)
   const updateFeatures = () => {
     setFeatures({
-      position: [Math.random(), Math.random(), Math.random()],
-      motion: [Math.random(), Math.random(), Math.random()],
-      environmental: [Math.random(), Math.random(), Math.random()],
-      historical: [Math.random(), Math.random(), Math.random()]
-    })
+      position: [Math.random(), Math.random(), Math.random()], // Example: 3 position features
+      motion: [Math.random(), Math.random(), Math.random()], // Example: 3 motion features
+      environmental: [Math.random(), Math.random(), Math.random()], // Example: 3 environmental features
+      historical: [Math.random(), Math.random(), Math.random()] // Example: 3 historical features
+    });
   }
 
+  // Updates the model performance state with new random values (simulation)
   const updateModelPerformance = () => {
     setModelPerformance({
-      accuracy: 0.85 + Math.random() * 0.1,
-      confidence: 0.8 + Math.random() * 0.15
-    })
+      accuracy: 0.85 + Math.random() * 0.1, // Accuracy between 0.85 and 0.95
+      confidence: 0.8 + Math.random() * 0.15 // Confidence between 0.8 and 0.95
+    });
   }
 
+  // Updates the steering recommendation state with a new random value (simulation)
   const updateSteeringRecommendation = () => {
-    setSteeringRecommendation(Math.random() * 70 - 35)
+    setSteeringRecommendation(Math.random() * 70 - 35); // Recommend angle between -35 and +35 degrees
   }
 
+  // Render the main dashboard layout
   return (
     <div className="flex h-screen bg-[#0f0a19] text-white">
       <Sidebar>

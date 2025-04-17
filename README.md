@@ -37,3 +37,108 @@ The primary goal is to process Automatic Identification System (AIS) data to und
     *   `npm` or `yarn` (Node.js)
 
 ## Project Structure
+
+## Installation
+
+There are two ways to set up the project: using the automated setup script (recommended for Linux/macOS) or manually following the steps.
+
+### Option 1: Using the Setup Script (Linux/macOS)
+
+This script automates the setup of both the Python backend and the Node.js frontend environments.
+
+1.  **Clone the Repository:**
+    ```bash
+    git clone https://github.com/iamredencio/shipping_tech.git
+    cd shipping_tech
+    ```
+
+2.  **Make the script executable:**
+    ```bash
+    chmod +x setup.sh
+    ```
+
+3.  **Run the script:**
+    ```bash
+    ./setup.sh
+    ```
+
+    The script will check prerequisites, create a Python virtual environment, install Python and Node.js dependencies. Follow the instructions printed at the end of the script to run the application.
+
+### Option 2: Manual Installation
+
+Follow these steps if you prefer to set up manually or if you are on an operating system other than Linux/macOS.
+
+1.  **Clone the Repository:**
+    ```bash
+    git clone https://github.com/iamredencio/shipping_tech.git
+    cd shipping_tech
+    ```
+
+2.  **Set up Python Backend:**
+    *   Navigate to the backend directory:
+        ```bash
+        cd maritime-tracking
+        ```
+    *   Create and activate a virtual environment:
+        ```bash
+        python3 -m venv venv  # Use python instead of python3 if that's your command
+        source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+        ```
+    *   Install Python dependencies:
+        ```bash
+        pip install --upgrade pip
+        pip install -r requirements.txt
+        ```
+    *   Deactivate the environment for now (you'll activate it when running backend scripts):
+        ```bash
+        deactivate
+        ```
+    *   Return to the root directory:
+        ```bash
+        cd ..
+        ```
+
+3.  **Set up Next.js Frontend:**
+    *   Install Node.js dependencies:
+        ```bash
+        npm install
+        # or if you use yarn:
+        # yarn install
+        ```
+
+4.  **Environment Variables:**
+    *   If the application requires specific API keys or configurations, create a `.env.local` file in the root directory and add them there. Refer to `.env.example` if provided.
+
+## Usage
+
+1.  **Prepare Data:**
+    *   Place your AIS data CSV files in the appropriate location (e.g., `maritime-tracking/data/raw/`).
+    *   Update any data loading scripts or configurations in the Python backend if necessary to point to your data.
+
+2.  **Run Backend Processes (Example - Adapt as needed):**
+    *   Activate the Python virtual environment:
+        ```bash
+        cd maritime-tracking
+        source venv/bin/activate # On Windows use `venv\Scripts\activate`
+        ```
+    *   Run necessary Python scripts (e.g., for training, data processing, or starting an API server - *these scripts might need to be created*):
+        ```bash
+        # Example: python train_model.py
+        # Example: python run_api.py
+        ```
+    *   Deactivate when finished with backend tasks:
+        ```bash
+        deactivate
+        cd ..
+        ```
+
+3.  **Run Frontend Dashboard:**
+    *   Start the Next.js development server (from the project root directory):
+        ```bash
+        npm run dev
+        # or
+        # yarn dev
+        ```
+    *   Open your browser and navigate to `http://localhost:3000` (or the port specified in the console).
+
+    *   **Note:** The dashboard currently uses **simulated data**. To display real results, connect the frontend to a backend API providing actual data and predictions.
